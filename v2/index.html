@@ -188,21 +188,38 @@
 
           <!-- NEW: confidence -->
           <div class="confidence-row" id="confidence-row">
-            <span class="conf-chip" id="confidence-text">Moderate confidence</span>
-            <span>Likely range <strong id="range-text">49–67</strong></span>
+            <span class="conf-dot" id="conf-dot"></span>
+            <span>Likely <strong id="range-text">49–67</strong> · <span id="confidence-text">Moderate confidence</span></span>
           </div>
           <p class="range-note" id="range-note"></p>
-          <div class="user-flag hidden" id="user-flag"></div>
 
-          <!-- NEW: the flag button -->
-          <button class="feedback-btn" id="feedback-btn">
-            <span class="feedback-icon" aria-hidden="true">⚑</span>
-            <span class="feedback-text">
-              <strong id="feedback-btn-title">Doesn't feel right?</strong>
-              <span class="sub" id="feedback-btn-sub">Tell Garmin how you actually feel</span>
-            </span>
-            <span class="chev" aria-hidden="true">›</span>
-          </button>
+          <!-- NEW: one-tap feedback -->
+          <div class="quick" id="quick">
+            <div id="quick-ask">
+              <div class="quick-title">Does this feel right?</div>
+              <div class="quick-buttons">
+                <button data-dir="-1"><span class="qi">↓</span>Calmer</button>
+                <button data-dir="0"><span class="qi">✓</span>Feels right</button>
+                <button data-dir="1"><span class="qi">↑</span>More stressed</button>
+              </div>
+            </div>
+            <div id="quick-done" class="hidden">
+              <div class="quick-done-row">
+                <span class="done-check" aria-hidden="true">✓</span>
+                <span class="quick-done-text">
+                  <strong id="quick-done-title">Thanks, you felt calmer</strong>
+                  <span class="sub" id="quick-done-sub">Garmin will learn from this</span>
+                </span>
+                <button class="link-btn" id="undo-btn">Undo</button>
+              </div>
+              <div class="quick-why" id="quick-why">
+                <span class="sub">Why?</span>
+                <button>Exercise</button>
+                <button>Caffeine</button>
+                <button>Excited</button>
+              </div>
+            </div>
+          </div>
 
           <!-- Day chart -->
           <div class="card">
@@ -254,56 +271,10 @@
         <button data-todo="More"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>More</button>
       </nav>
 
-      <!-- ===== Feedback sheet ===== -->
-      <div class="backdrop hidden" id="backdrop">
-        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
-          <div class="grabber" aria-hidden="true"></div>
-
-          <div id="sheet-form">
-            <h2 id="sheet-title">How do you actually feel?</h2>
-            <p class="sub" id="sheet-measured"></p>
-
-            <div class="field-label">I feel…</div>
-            <div class="options" id="felt-options">
-              <button data-level="0"><i style="background:var(--rest)"></i>Calm / resting</button>
-              <button data-level="1"><i style="background:var(--low)"></i>Fine / a little stressed</button>
-              <button data-level="2"><i style="background:var(--medium)"></i>Moderately stressed</button>
-              <button data-level="3"><i style="background:var(--high)"></i>Very stressed</button>
-            </div>
-
-            <div class="field-label">What might explain it? <span class="optional">Optional</span></div>
-            <div class="chips" id="reason-options">
-              <button>Just exercised</button>
-              <button>Caffeine</button>
-              <button>Excited / happy</button>
-              <button>Feeling sick</button>
-              <button>Alcohol</button>
-              <button>Slept badly</button>
-              <button>Watch was loose</button>
-            </div>
-
-            <label class="field-label" for="note">Anything else? <span class="optional">Optional</span></label>
-            <textarea id="note" rows="2" placeholder="e.g. I was laughing with friends"></textarea>
-
-            <button class="primary" id="send-btn" disabled>Send Feedback</button>
-            <button class="secondary" id="cancel-btn">Cancel</button>
-          </div>
-
-          <div id="sheet-thanks" class="hidden">
-            <div class="thanks-icon" aria-hidden="true">✓</div>
-            <h2>Thanks, got it</h2>
-            <p class="sub" id="thanks-text"></p>
-            <div class="progress"><div id="thanks-bar"></div></div>
-            <p class="sub" id="thanks-progress"></p>
-            <button class="primary" id="done-btn">Done</button>
-          </div>
-        </div>
-      </div>
-
       <div class="toast" id="toast" role="status"></div>
     </div>
 
-    <p class="caption">Prototype v2: flag a stress reading as wrong · tap the <strong>Stress</strong> tile under At a Glance</p>
+    <p class="caption">Prototype v2: one-tap stress feedback · tap the <strong>Stress</strong> tile under At a Glance</p>
   </div>
 
   <script src="script.js"></script>
