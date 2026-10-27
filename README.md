@@ -4,6 +4,11 @@ A clickable prototype for ENTR 222 of a new feature in the Garmin Connect phone 
 
 This is a class project. It is not affiliated with or made by Garmin, and all the data is made up.
 
+## Versions
+
+- **Version 1** (`/`): the first mockup, with a "My Day" home screen.
+- **Version 2** (`/v2/`): restyled to match the current Garmin Connect app more closely. It has the newer Home screen (Today's Activity, swipeable In Focus cards, and an At a Glance tile grid), a round stress gauge with the likely range drawn on it, and Garmin's blue/orange stress chart. Open it from the **Stress** tile under At a Glance.
+
 ## Try it
 
 Open `index.html` in a browser (or the GitHub Pages link). On a laptop it appears inside a phone frame; on a phone it fills the screen.

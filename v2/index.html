@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Stress Feedback Prototype v2</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="statusbar">
+        <span>3:02</span>
+        <span class="status-icons">
+          <svg viewBox="0 0 18 12" width="18" height="12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+          <svg viewBox="0 0 26 12" width="26" height="12" aria-hidden="true"><rect x="0.5" y="0.5" width="22" height="11" rx="3" fill="none" stroke="currentColor"/><rect x="2" y="2" width="15" height="8" rx="1.5"/><rect x="24" y="4" width="2" height="4" rx="1"/></svg>
+        </span>
+      </div>
+
+      <!-- ===== Screen 1: Home ===== -->
+      <section class="screen" id="screen-home">
+        <header class="topbar">
+          <div class="avatar" aria-hidden="true">SK</div>
+          <div class="topbar-icons">
+            <button class="icon-btn" data-todo="Devices" aria-label="Devices">
+              <svg viewBox="0 0 24 24"><rect x="7" y="6" width="10" height="12" rx="3"/><path d="M9 6l1-3h4l1 3M9 18l1 3h4l1-3"/></svg>
+            </button>
+            <button class="icon-btn" data-todo="Notifications" aria-label="Notifications">
+              <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="scroll">
+          <!-- Today's Activity -->
+          <div class="section-head">
+            <h2>Today's Activity</h2>
+            <button class="edit" data-todo="Edit Today's Activity">Edit</button>
+          </div>
+          <button class="card activity" data-todo="Activity details">
+            <span class="activity-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="14" cy="4.5" r="2"/><path d="M8 21l3-6 3 2v5M11 15l1-6-3 1-2 3M12 9l3 3 3 1" fill="none"/></svg>
+            </span>
+            <span class="activity-text">
+              <strong>Houston Running</strong>
+              <span class="sub">Today · 7:02 AM</span>
+            </span>
+            <span class="activity-stats">
+              <span><b>5.02</b> km</span>
+              <span><b>28:14</b> time</span>
+            </span>
+          </button>
+
+          <!-- In Focus: swipeable cards -->
+          <div class="section-head">
+            <h2>In Focus</h2>
+            <button class="edit" data-todo="Edit In Focus">Edit</button>
+          </div>
+          <div class="carousel" id="carousel">
+            <button class="card focus" data-todo="Sleep">
+              <div class="focus-head"><span class="card-label">Sleep Score</span><span class="sub">Last night</span></div>
+              <div class="focus-body">
+                <svg class="ring big" viewBox="0 0 100 100" data-value="78" data-color="var(--sleep)"></svg>
+                <div>
+                  <div class="focus-value">78 <span class="pill" style="color:var(--sleep)">Fair</span></div>
+                  <div class="sub">7h 12m · Deep 1h 21m</div>
+                  <div class="sub">Sleep feedback: Restful sleep</div>
+                </div>
+              </div>
+            </button>
+            <button class="card focus" data-todo="Body Battery">
+              <div class="focus-head"><span class="card-label">Body Battery</span><span class="sub">Now</span></div>
+              <div class="focus-body">
+                <svg class="ring big" viewBox="0 0 100 100" data-value="64" data-color="var(--accent)"></svg>
+                <div>
+                  <div class="focus-value">64</div>
+                  <div class="sub">+38 charged</div>
+                  <div class="sub">−46 drained</div>
+                </div>
+              </div>
+            </button>
+            <button class="card focus" data-todo="Training Readiness">
+              <div class="focus-head"><span class="card-label">Training Readiness</span><span class="sub">Today</span></div>
+              <div class="focus-body">
+                <svg class="ring big" viewBox="0 0 100 100" data-value="71" data-color="var(--good)"></svg>
+                <div>
+                  <div class="focus-value">71 <span class="pill" style="color:var(--good)">High</span></div>
+                  <div class="sub">Ready for a hard workout</div>
+                </div>
+              </div>
+            </button>
+          </div>
+          <div class="dots" id="dots"><i class="on"></i><i></i><i></i></div>
+
+          <!-- At a Glance: grid of small tiles -->
+          <div class="section-head">
+            <h2>At a Glance</h2>
+            <button class="edit" data-todo="Edit At a Glance">Edit</button>
+          </div>
+          <div class="glance-grid">
+            <!-- The Stress tile opens the Stress screen -->
+            <button class="card tile" id="stress-tile">
+              <span class="tile-label">Stress <span class="flag-dot hidden" id="tile-flag" title="You flagged a reading">⚑</span></span>
+              <span class="tile-body">
+                <svg class="ring" id="stress-tile-ring" viewBox="0 0 100 100"></svg>
+                <span>
+                  <span class="tile-value" id="stress-tile-value">58</span>
+                  <span class="sub" id="stress-tile-level">Medium</span>
+                </span>
+              </span>
+            </button>
+            <button class="card tile" data-todo="Steps">
+              <span class="tile-label">Steps</span>
+              <span class="tile-body">
+                <svg class="ring" viewBox="0 0 100 100" data-value="82" data-color="var(--steps)"></svg>
+                <span><span class="tile-value">6,412</span><span class="sub">Goal 7,800</span></span>
+              </span>
+            </button>
+            <button class="card tile" data-todo="Heart Rate">
+              <span class="tile-label">Heart Rate</span>
+              <span class="tile-body">
+                <svg class="ring" viewBox="0 0 100 100" data-value="54" data-color="var(--hr)"></svg>
+                <span><span class="tile-value">54</span><span class="sub">Resting bpm</span></span>
+              </span>
+            </button>
+            <button class="card tile" data-todo="Intensity Minutes">
+              <span class="tile-label">Intensity Minutes</span>
+              <span class="tile-body">
+                <svg class="ring" viewBox="0 0 100 100" data-value="63" data-color="var(--intensity)"></svg>
+                <span><span class="tile-value">95</span><span class="sub">of 150</span></span>
+              </span>
+            </button>
+            <button class="card tile" data-todo="HRV Status">
+              <span class="tile-label">HRV Status</span>
+              <span class="tile-body">
+                <svg class="ring" viewBox="0 0 100 100" data-value="70" data-color="var(--good)"></svg>
+                <span><span class="tile-value">48<small> ms</small></span><span class="sub">Balanced</span></span>
+              </span>
+            </button>
+            <button class="card tile" data-todo="Respiration">
+              <span class="tile-label">Respiration</span>
+              <span class="tile-body">
+                <svg class="ring" viewBox="0 0 100 100" data-value="45" data-color="var(--resp)"></svg>
+                <span><span class="tile-value">14</span><span class="sub">brpm avg</span></span>
+              </span>
+            </button>
+          </div>
+
+          <p class="disclaimer">Class prototype for ENTR 222 · not affiliated with or made by Garmin</p>
+        </div>
+      </section>
+
+      <!-- ===== Screen 2: Stress details ===== -->
+      <section class="screen hidden" id="screen-stress">
+        <header class="topbar">
+          <button class="icon-btn" id="back-btn" aria-label="Back">
+            <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+          <h1>Stress</h1>
+          <button class="icon-btn" data-todo="About stress" aria-label="About stress">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+          </button>
+        </header>
+
+        <div class="tabs" role="tablist">
+          <button class="active" role="tab">1 Day</button>
+          <button role="tab" data-todo="7 Days view">7 Days</button>
+          <button role="tab" data-todo="4 Weeks view">4 Weeks</button>
+          <button role="tab" data-todo="1 Year view">1 Year</button>
+        </div>
+
+        <div class="scroll">
+          <div class="date-nav">
+            <button class="icon-btn" data-todo="Previous day" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+            <span>Today</span>
+            <button class="icon-btn" disabled aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- Gauge for the selected reading, with the likely range drawn on the arc -->
+          <div class="gauge-wrap">
+            <svg id="gauge" viewBox="0 0 220 190" role="img" aria-label="Stress gauge"></svg>
+            <div class="gauge-center">
+              <div class="gauge-value" id="reading-value">58</div>
+              <div class="gauge-level" id="reading-level">Medium</div>
+              <div class="gauge-time" id="reading-time">Now · 2:45 PM</div>
+            </div>
+          </div>
+
+          <!-- NEW: confidence -->
+          <div class="confidence-row" id="confidence-row">
+            <span class="conf-chip" id="confidence-text">Moderate confidence</span>
+            <span>Likely range <strong id="range-text">49–67</strong></span>
+          </div>
+          <p class="range-note" id="range-note"></p>
+          <div class="user-flag hidden" id="user-flag"></div>
+
+          <!-- NEW: the flag button -->
+          <button class="feedback-btn" id="feedback-btn">
+            <span class="feedback-icon" aria-hidden="true">⚑</span>
+            <span class="feedback-text">
+              <strong id="feedback-btn-title">Doesn't feel right?</strong>
+              <span class="sub" id="feedback-btn-sub">Tell Garmin how you actually feel</span>
+            </span>
+            <span class="chev" aria-hidden="true">›</span>
+          </button>
+
+          <!-- Day chart -->
+          <div class="card">
+            <div class="chart-head">
+              <span class="card-label">Stress Level</span>
+              <span class="sub">Tap a bar to see that reading</span>
+            </div>
+            <svg id="stress-chart" class="day-chart" viewBox="0 0 340 160" role="img" aria-label="Stress levels through the day"></svg>
+            <div class="legend">
+              <span><i style="background:var(--rest)"></i>Rest</span>
+              <span><i style="background:var(--stress)"></i>Stress</span>
+              <span><i style="background:var(--activity)"></i>Activity</span>
+              <span><i class="flag-key">⚑</i>Your feedback</span>
+            </div>
+          </div>
+
+          <!-- Breakdown -->
+          <div class="card">
+            <div class="chart-head">
+              <span class="card-label">Stress Durations</span>
+              <span class="sub" id="overall">Overall 38 · Low</span>
+            </div>
+            <div class="stacked" id="stacked"></div>
+            <div class="breakdown" id="breakdown"></div>
+          </div>
+
+          <!-- NEW: personalization progress -->
+          <div class="card">
+            <div class="chart-head">
+              <span class="card-label">Personalizing Your Stress</span>
+              <span class="sub" id="learn-count">2 of 5</span>
+            </div>
+            <div class="progress"><div id="learn-bar"></div></div>
+            <p class="sub learn-text" id="learn-text"></p>
+            <ul class="history" id="history"></ul>
+          </div>
+
+          <p class="disclaimer">Class prototype for ENTR 222 · not affiliated with or made by Garmin ·
+            <button class="link-btn" id="reset-btn">Reset demo</button></p>
+        </div>
+      </section>
+
+      <!-- Bottom tab bar -->
+      <nav class="tabbar">
+        <button class="active" id="tab-home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+        <button data-todo="Challenges"><svg viewBox="0 0 24 24"><path d="M7 4h10v3a5 5 0 0 1-10 0zM5 5H3v2a4 4 0 0 0 4 4M19 5h2v2a4 4 0 0 1-4 4M12 12v4M8 20h8l-1-4H9z"/></svg>Challenges</button>
+        <button data-todo="Calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendar</button>
+        <button data-todo="News Feed"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h5"/></svg>News Feed</button>
+        <button data-todo="More"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>More</button>
+      </nav>
+
+      <!-- ===== Feedback sheet ===== -->
+      <div class="backdrop hidden" id="backdrop">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+          <div class="grabber" aria-hidden="true"></div>
+
+          <div id="sheet-form">
+            <h2 id="sheet-title">How do you actually feel?</h2>
+            <p class="sub" id="sheet-measured"></p>
+
+            <div class="field-label">I feel…</div>
+            <div class="options" id="felt-options">
+              <button data-level="0"><i style="background:var(--rest)"></i>Calm / resting</button>
+              <button data-level="1"><i style="background:var(--low)"></i>Fine / a little stressed</button>
+              <button data-level="2"><i style="background:var(--medium)"></i>Moderately stressed</button>
+              <button data-level="3"><i style="background:var(--high)"></i>Very stressed</button>
+            </div>
+
+            <div class="field-label">What might explain it? <span class="optional">Optional</span></div>
+            <div class="chips" id="reason-options">
+              <button>Just exercised</button>
+              <button>Caffeine</button>
+              <button>Excited / happy</button>
+              <button>Feeling sick</button>
+              <button>Alcohol</button>
+              <button>Slept badly</button>
+              <button>Watch was loose</button>
+            </div>
+
+            <label class="field-label" for="note">Anything else? <span class="optional">Optional</span></label>
+            <textarea id="note" rows="2" placeholder="e.g. I was laughing with friends"></textarea>
+
+            <button class="primary" id="send-btn" disabled>Send Feedback</button>
+            <button class="secondary" id="cancel-btn">Cancel</button>
+          </div>
+
+          <div id="sheet-thanks" class="hidden">
+            <div class="thanks-icon" aria-hidden="true">✓</div>
+            <h2>Thanks, got it</h2>
+            <p class="sub" id="thanks-text"></p>
+            <div class="progress"><div id="thanks-bar"></div></div>
+            <p class="sub" id="thanks-progress"></p>
+            <button class="primary" id="done-btn">Done</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast" id="toast" role="status"></div>
+    </div>
+
+    <p class="caption">Prototype v2: flag a stress reading as wrong · tap the <strong>Stress</strong> tile under At a Glance</p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
