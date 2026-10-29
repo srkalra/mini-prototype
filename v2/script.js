@@ -6,8 +6,8 @@ const LEVELS = [
   { name: "High", color: "var(--high)", min: 76, max: 100 },
 ];
 
-// Labels for the "I feel…" options, in the same order as LEVELS
-const FELT_LABELS = ["Calm / resting", "Fine / a little stressed", "Moderately stressed", "Very stressed"];
+// What each one-tap answer means: felt calmer, about right, or more stressed
+const ANSWERS = { "-1": "calmer", "0": "about right", "1": "more stressed" };
 
 // How wide the likely range is (+/-) for each confidence level
 const SPREAD = { high: 4, moderate: 8, low: 13 };
@@ -36,20 +36,20 @@ for (let i = 0; i < 60; i++) {
   const hour = i / 4;
   let value;
   let confidence = "moderate";
-  let reason = "Normal signal quality from your watch.";
+  let reason = "Normal signal from your watch.";
 
   if (hour < 6.5) {
     // Asleep: resting stress, very reliable
     value = 12 + random() * 12;
     confidence = "high";
-    reason = "You were still and your watch had a good signal, so this reading is reliable.";
+    reason = "You were still with a strong signal.";
   } else if (hour >= 7 && hour < 8) {
     // Morning run: Garmin doesn't measure stress during activities
     value = null;
   } else if (hour >= 8 && hour < 8.5) {
     value = 45 + random() * 15;
     confidence = "low";
-    reason = "You had just finished a run, so your heart rate was still recovering. That makes stress harder to read.";
+    reason = "Your heart rate was still recovering from your run.";
   } else if (hour < 11) {
     value = 28 + random() * 20;
   } else {
@@ -67,7 +67,7 @@ for (let i = 0; i < 60; i++) {
 // The latest reading matches the example: "Garmin says medium stress, I feel fine"
 const latest = readings[readings.length - 1];
 latest.value = 58;
-latest.reason = "Based on the last 15 minutes. You moved around a bit, which makes the reading less certain.";
+latest.reason = "You moved around recently, so this is less certain.";
 
 function likelyRange(reading) {
   const spread = reading === latest ? 9 : SPREAD[reading.confidence];
@@ -88,16 +88,16 @@ function formatTime(minutes) {
 // ===== Saved state =====
 // Feedback is saved in the browser so the demo remembers it after a refresh.
 const SAMPLE_HISTORY = [
-  { when: "Yesterday, 8:15 PM", measured: 2, value: 74, felt: 1 },
-  { when: "3 days ago, 10:30 AM", measured: 2, value: 61, felt: 0 },
+  { when: "Yesterday, 8:15 PM", measured: 2, value: 74, dir: -1 },
+  { when: "3 days ago, 10:30 AM", measured: 2, value: 61, dir: -1 },
 ];
 
-let feedback = loadFeedback(); // { readingIndex: { felt, reasons, note } }
+let feedback = loadFeedback(); // { readingIndex: { dir, reason } }
 let selected = readings.length - 1;
 
 function loadFeedback() {
   try {
-    return JSON.parse(localStorage.getItem("stressFeedbackV2")) || {};
+    return JSON.parse(localStorage.getItem("stressFeedbackQuick")) || {};
   } catch (e) {
     return {};
   }
@@ -105,7 +105,7 @@ function loadFeedback() {
 
 function saveFeedback() {
   try {
-    localStorage.setItem("stressFeedbackV2", JSON.stringify(feedback));
+    localStorage.setItem("stressFeedbackQuick", JSON.stringify(feedback));
   } catch (e) {
     // Saving isn't allowed, so feedback only lasts until the page reloads
   }
@@ -256,7 +256,7 @@ function renderReading() {
   $("reading-time").textContent = (reading === latest ? "Now · " : "") + formatTime(reading.minutes);
   renderGauge(reading);
 
-  $("feedback-btn").disabled = isActivity;
+  $("quick").classList.toggle("hidden", isActivity);
   $("confidence-row").classList.toggle("hidden", isActivity);
 
   if (isActivity) {
@@ -264,9 +264,6 @@ function renderReading() {
     $("reading-level").textContent = "Activity";
     $("reading-level").style.color = "var(--muted)";
     $("range-note").textContent = "Stress isn't measured while you're doing an activity.";
-    $("user-flag").classList.add("hidden");
-    $("feedback-btn-title").textContent = "Doesn't feel right?";
-    $("feedback-btn-sub").textContent = "Pick a stress reading to give feedback";
     return;
   }
 
@@ -282,34 +279,15 @@ function renderReading() {
   $("range-text").textContent = range.low + "–" + range.high;
   $("confidence-text").textContent =
     reading.confidence.charAt(0).toUpperCase() + reading.confidence.slice(1) + " confidence";
-  $("confidence-text").className = "conf-chip " + reading.confidence;
+  $("conf-dot").className = "conf-dot " + reading.confidence;
 
   let note = reading.reason;
   if (lowLevel !== highLevel) {
-    note += " The range covers both " + lowLevel + " and " + highLevel + ", so it could be either.";
+    note += " Could be " + lowLevel + " or " + highLevel + ".";
   }
   $("range-note").textContent = note;
 
-  // Show what the user said about this reading, if anything
-  const fb = feedback[selected];
-  $("user-flag").classList.toggle("hidden", !fb);
-  if (fb) {
-    let text = "⚑ You said you felt <strong>" + FELT_LABELS[fb.felt].toLowerCase() + "</strong>";
-    if (fb.reasons.length) text += " · " + fb.reasons.join(", ");
-    if (fb.note) text += " · “" + escapeHtml(fb.note) + "”";
-    $("user-flag").innerHTML = text;
-  }
-
-  $("feedback-btn-title").textContent = fb ? "Edit your feedback" : "Doesn't feel right?";
-  $("feedback-btn-sub").textContent = fb
-    ? "Change how you said you felt at " + formatTime(reading.minutes)
-    : "Tell Garmin how you actually feel";
-}
-
-function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
+  renderQuick();
 }
 
 function renderChart() {
@@ -432,11 +410,11 @@ function renderLearning() {
     when: "Today, " + formatTime(readings[i].minutes),
     measured: levelIndex(readings[i].value),
     value: readings[i].value,
-    felt: feedback[i].felt,
+    dir: feedback[i].dir,
   }));
 
   $("history").innerHTML = todays.concat(SAMPLE_HISTORY).map((item) =>
-    `<li><span>${item.when}</span><span>Measured ${LEVELS[item.measured].name} (${item.value}) → you felt ${FELT_LABELS[item.felt].toLowerCase()}</span></li>`
+    `<li><span>${item.when}</span><span>Measured ${LEVELS[item.measured].name} (${item.value}) → felt ${ANSWERS[item.dir]}</span></li>`
   ).join("");
 }
 
@@ -452,112 +430,49 @@ function renderAll() {
   renderStress();
 }
 
-// ===== Feedback sheet =====
-let felt = null;
+// ===== One-tap feedback =====
+function renderQuick() {
+  const fb = feedback[selected];
+  $("quick-ask").classList.toggle("hidden", !!fb);
+  $("quick-done").classList.toggle("hidden", !fb);
+  if (!fb) return;
 
-function openSheet() {
-  const reading = readings[selected];
-  if (reading.value === null) return;
-
-  const measured = levelIndex(reading.value);
-  const existing = feedback[selected];
-
-  $("sheet-measured").innerHTML = "Garmin measured <strong>" + LEVELS[measured].name +
-    " (" + reading.value + ")</strong> at " + formatTime(reading.minutes);
-
-  // Mark which option matches Garmin's reading
-  document.querySelectorAll("#felt-options button").forEach((btn) => {
-    const old = btn.querySelector(".measured-tag");
-    if (old) old.remove();
-    if (Number(btn.dataset.level) === measured) {
-      btn.insertAdjacentHTML("beforeend", '<span class="measured-tag">Garmin\'s reading</span>');
-    }
-  });
-
-  // Fill in any earlier answer so it can be edited
-  felt = existing ? existing.felt : null;
-  document.querySelectorAll("#felt-options button").forEach((btn) => {
-    btn.classList.toggle("selected", Number(btn.dataset.level) === felt);
-  });
-  document.querySelectorAll("#reason-options button").forEach((btn) => {
-    btn.classList.toggle("selected", !!existing && existing.reasons.includes(btn.textContent));
-  });
-  $("note").value = existing ? existing.note : "";
-  updateSendButton();
-
-  $("sheet-form").classList.remove("hidden");
-  $("sheet-thanks").classList.add("hidden");
-  $("backdrop").classList.remove("hidden");
-}
-
-function closeSheet() {
-  $("backdrop").classList.add("hidden");
-}
-
-function updateSendButton() {
-  const measured = levelIndex(readings[selected].value);
-  $("send-btn").disabled = felt === null;
-  $("send-btn").textContent = felt === measured ? "Confirm Reading Is Right" : "Send Feedback";
-}
-
-document.querySelectorAll("#felt-options button").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    felt = Number(btn.dataset.level);
-    document.querySelectorAll("#felt-options button").forEach((b) => b.classList.toggle("selected", b === btn));
-    updateSendButton();
-  });
-});
-
-document.querySelectorAll("#reason-options button").forEach((btn) => {
-  btn.addEventListener("click", () => btn.classList.toggle("selected"));
-});
-
-$("feedback-btn").addEventListener("click", openSheet);
-$("cancel-btn").addEventListener("click", closeSheet);
-$("done-btn").addEventListener("click", closeSheet);
-$("backdrop").addEventListener("click", (event) => {
-  if (event.target === $("backdrop")) closeSheet();
-});
-
-$("send-btn").addEventListener("click", () => {
-  const reading = readings[selected];
-  const measured = levelIndex(reading.value);
-  const before = checkInCount();
-
-  feedback[selected] = {
-    felt: felt,
-    reasons: [...document.querySelectorAll("#reason-options button.selected")].map((b) => b.textContent),
-    note: $("note").value.trim(),
-  };
-  saveFeedback();
-
-  // Thank-you message depends on what the user said
-  let message;
-  if (felt < measured) {
-    message = "You felt calmer than Garmin measured. We'll use this to tune how your heart rate is read as stress.";
-  } else if (felt > measured) {
-    message = "You felt more stressed than Garmin measured. We'll use this to tune how your heart rate is read as stress.";
-  } else {
-    message = "Thanks for confirming this reading. Confirmations help Garmin learn too.";
-  }
-  $("thanks-text").textContent = message;
+  $("quick-done-title").textContent = fb.dir === 0
+    ? "Thanks for confirming"
+    : "Got it, you felt " + ANSWERS[fb.dir];
 
   const count = checkInCount();
-  const done = Math.min(count, LEARN_GOAL);
-  $("thanks-progress").textContent = count >= LEARN_GOAL
-    ? "Your stress readings are now personalized to you."
-    : done + " of " + LEARN_GOAL + " check-ins until your readings are personalized.";
+  $("quick-done-sub").textContent = count >= LEARN_GOAL
+    ? "Your readings are now personalized"
+    : Math.min(count, LEARN_GOAL) + " of " + LEARN_GOAL + " check-ins to personalize your readings";
 
-  // Animate the progress bar from the old count to the new one
-  $("thanks-bar").style.transition = "none";
-  $("thanks-bar").style.width = (Math.min(before, LEARN_GOAL) / LEARN_GOAL) * 100 + "%";
-  $("sheet-form").classList.add("hidden");
-  $("sheet-thanks").classList.remove("hidden");
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    $("thanks-bar").style.transition = "";
-    $("thanks-bar").style.width = (done / LEARN_GOAL) * 100 + "%";
-  }));
+  // Asking why only makes sense when the reading was off
+  $("quick-why").classList.toggle("hidden", fb.dir === 0);
+  document.querySelectorAll("#quick-why button").forEach((btn) => {
+    btn.classList.toggle("selected", btn.textContent === fb.reason);
+  });
+}
 
+document.querySelectorAll(".quick-buttons button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    feedback[selected] = { dir: Number(btn.dataset.dir), reason: null };
+    saveFeedback();
+    renderAll();
+  });
+});
+
+document.querySelectorAll("#quick-why button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const fb = feedback[selected];
+    fb.reason = fb.reason === btn.textContent ? null : btn.textContent;
+    saveFeedback();
+    renderQuick();
+  });
+});
+
+$("undo-btn").addEventListener("click", () => {
+  delete feedback[selected];
+  saveFeedback();
   renderAll();
 });
 

@@ -9,7 +9,9 @@ This is a class project. It is not affiliated with or made by Garmin, and all th
 - **Version 1** (`/`): the first mockup, with a "My Day" home screen.
 - **Version 2** (`/v2/`): restyled to match the current Garmin Connect app more closely. It has the newer Home screen (Today's Activity, swipeable In Focus cards, and an At a Glance tile grid), a round stress gauge with the likely range drawn on it, and Garmin's blue/orange stress chart. Open it from the **Stress** tile under At a Glance.
 
-## Try it
+  Feedback in version 2 is **one tap**: under the gauge, "Does this feel right?" offers **Calmer**, **Feels right** or **More stressed**. After tapping, you can optionally pick a quick reason (Exercise, Caffeine, Excited) or **Undo**. There is no form to fill in.
+
+## Try version 1
 
 Open `index.html` in a browser (or the GitHub Pages link). On a laptop it appears inside a phone frame; on a phone it fills the screen.
 

@@ -493,24 +493,22 @@ button {
   margin-top: 6px;
 }
 
-.conf-chip {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 10px;
-  background: var(--card-2);
+.conf-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
-.conf-chip.high {
-  color: var(--good);
+.conf-dot.high {
+  background: var(--good);
 }
 
-.conf-chip.moderate {
-  color: var(--low);
+.conf-dot.moderate {
+  background: var(--low);
 }
 
-.conf-chip.low {
-  color: var(--high);
+.conf-dot.low {
+  background: var(--high);
 }
 
 .range-note {
@@ -521,61 +519,113 @@ button {
   margin: 8px 8px 12px;
 }
 
-.user-flag {
-  margin: 0 0 10px;
-  padding: 9px 12px;
-  border-radius: 12px;
-  background: rgba(28, 155, 230, 0.13);
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-/* The new "Doesn't feel right?" button */
-.feedback-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-  border-radius: 16px;
+/* NEW: one-tap feedback card */
+.quick {
   background: var(--card);
-  border: 1px solid rgba(28, 155, 230, 0.55);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
 }
 
-.feedback-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
+.quick-title {
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
-.feedback-icon {
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
+.quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.quick-buttons button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 4px;
+  border-radius: 12px;
+  background: var(--card-2);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.quick-buttons button:active {
+  transform: scale(0.96);
+  background: rgba(28, 155, 230, 0.25);
+}
+
+.qi {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: rgba(28, 155, 230, 0.16);
   color: var(--accent);
-  font-size: 17px;
+  font-size: 16px;
 }
 
-.feedback-text {
+.quick-done-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.done-check {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.4); }
+  to { transform: scale(1); }
+}
+
+.quick-done-text {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  font-size: 14px;
 }
 
-.feedback-text strong {
+.quick-why {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.quick-why .sub {
+  margin-right: 2px;
+}
+
+.quick-why button {
+  padding: 5px 11px;
+  border-radius: 14px;
+  font-size: 12.5px;
+  border: 1px solid var(--line);
+}
+
+.quick-why button.selected {
+  border-color: var(--accent);
   color: var(--accent);
-  font-size: 15px;
-}
-
-.chev {
-  color: var(--muted);
-  font-size: 24px;
-  line-height: 1;
+  background: rgba(28, 155, 230, 0.15);
 }
 
 .chart-head {
@@ -721,178 +771,6 @@ button {
   stroke-width: 1.8;
   stroke-linejoin: round;
   stroke-linecap: round;
-}
-
-/* ===== Bottom sheet ===== */
-.backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: flex-end;
-  z-index: 10;
-}
-
-.sheet {
-  width: 100%;
-  max-height: 92%;
-  overflow-y: auto;
-  background: var(--card);
-  border-radius: 20px 20px 0 0;
-  padding: 8px 18px 28px;
-  animation: slide-up 0.25s ease;
-}
-
-@keyframes slide-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.grabber {
-  width: 40px;
-  height: 5px;
-  border-radius: 3px;
-  background: var(--line);
-  margin: 0 auto 12px;
-}
-
-.sheet h2 {
-  font-size: 20px;
-  margin: 0 0 4px;
-}
-
-.field-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin: 16px 0 8px;
-}
-
-.optional {
-  color: var(--muted);
-  font-weight: 400;
-}
-
-/* "I feel…" list, styled like a Garmin settings list */
-.options {
-  background: var(--card-2);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.options button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px 14px;
-  font-size: 14px;
-  border-top: 1px solid var(--line);
-}
-
-.options button:first-child {
-  border-top: none;
-}
-
-.options i {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.options button.selected::after {
-  content: "✓";
-  margin-left: 8px;
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.options button.selected {
-  background: rgba(28, 155, 230, 0.13);
-}
-
-.measured-tag {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chips button {
-  padding: 7px 12px;
-  border-radius: 16px;
-  font-size: 13px;
-  border: 1px solid var(--line);
-}
-
-.chips button.selected {
-  border-color: var(--accent);
-  background: rgba(28, 155, 230, 0.15);
-  color: var(--accent);
-}
-
-textarea {
-  width: 100%;
-  background: var(--card-2);
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px;
-  font: inherit;
-  font-size: 14px;
-  resize: none;
-}
-
-.primary,
-.secondary {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: 13px;
-  border-radius: 8px;
-  font-weight: 600;
-  margin-top: 16px;
-}
-
-.primary {
-  background: var(--accent);
-  color: #fff;
-}
-
-.primary:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.secondary {
-  margin-top: 8px;
-  color: var(--accent);
-}
-
-#sheet-thanks {
-  text-align: center;
-}
-
-#sheet-thanks .sub {
-  line-height: 1.45;
-}
-
-.thanks-icon {
-  width: 52px;
-  height: 52px;
-  margin: 8px auto 12px;
-  border-radius: 50%;
-  background: var(--accent);
-  font-size: 28px;
-  font-weight: 700;
-  display: grid;
-  place-items: center;
 }
 
 /* ===== Toast ===== */
